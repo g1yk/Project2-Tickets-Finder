@@ -1,0 +1,15 @@
+{
+  "tickets": [{
+    "origin": "KBP",
+    "origin_name": "Kyiv",
+    "destination": "DPS",
+    "destination_name": "Denpasar",
+    "departure_date": "12.05.18",
+    "departure_time": "16:20",
+    "arrival_date": "12.05.18",
+    "arrival_time": "22:10",
+    "carrier": "TK",
+    "stops": 3,
+    "price": 12400
+  }]
+}
