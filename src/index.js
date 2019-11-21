@@ -256,10 +256,6 @@ class Tickets extends Component {
 	}
 
 	showPlaces = (e) => {
-		e.preventDefault();
-
-		let cityTo = e.target.elements.cityTo.value;
-		let cityFrom = e.target.elements.cityFrom.value;
 
 
 		let copyPlaces = [...this.state.places]
@@ -336,17 +332,8 @@ class Tickets extends Component {
 			<div className="flex">
 				<div className="select">
 					<span>Currency</span>
-				
-
 					
-					<form onSubmit={this.props.showPrices}>
-                <input type="text" name='cityFrom' placeholder="From Where"/>
-                <input type="text"  name='cityTo' placeholder="To..." />
-                <button>Get Quotes</button>
-                
-            </form>
-
-					{/* <Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} /> */}
+					<Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} />
 					<span>Transfers</span>
 
 					{/* {this.getCarriers()} */}
@@ -379,7 +366,7 @@ class Tickets extends Component {
 
 				<div className="tickets">
 
-					{/* {this.showPrices()} */}
+					{this.showPrices()}
 					{
 						sortedTickets.map((item, i) => {
 							if (this.state.transfers[item.stops]) {
