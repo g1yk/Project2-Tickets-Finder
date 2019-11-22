@@ -45,6 +45,8 @@ class Tickets extends Component {
 	}
 
 	componentDidMount() {
+
+
 		const RAPIDAPI_API_URL = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/ORD/LAX/2019-11-23/2019-11-28';
 
 		const RAPIDAPI_REQUEST_HEADERS = {
@@ -120,6 +122,17 @@ class Tickets extends Component {
 
 
 	showPrices = (e) => {
+
+	e.preventDefault()
+
+		let cityFrom = e.target.elements.cityFrom.value;
+		let cityTo = e.target.elements.cityTo.value;
+
+		console.log(cityFrom)
+		console.log(cityTo)
+
+
+
 		let copyQuotes = [...this.state.quotes]
 		if (copyQuotes.length > 0) {
 			console.log(copyQuotes)
@@ -332,7 +345,13 @@ class Tickets extends Component {
 			<div className="flex">
 				<div className="select">
 					<span>Currency</span>
-					
+
+					<form onSubmit={this.props.getWeather}>
+                <input type="text" name='city' placeholder="From..."/>
+                <input type="text"  name='country' placeholder="To..." />
+                <button>Get Tickets</button>
+                
+            </form>
 					<Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} />
 					<span>Transfers</span>
 
