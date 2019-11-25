@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './images/vectorpaint.svg';
+// import logo from '/images/vectorpaint.svg';
 
 const Flight = ({ tickets, currency }) => {
     const transfers = (stops) => {
@@ -22,7 +22,7 @@ const Flight = ({ tickets, currency }) => {
     return (
       <div className="flight flex">
         <div className="flight-buy">
-          <img src={logo} className="airline-logo" alt="Turkish airlines" />
+          {/* <img src={logo} className="airline-logo" alt="Turkish airlines" /> */}
           <button>
             Buy ticket <br />
             {` ${Math.round(tickets.price / currency.rate) } ${currency.name } `}

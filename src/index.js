@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
-import logo from './images/vectorpaint.svg';
+// import logo from './images/vectorpaint.svg';
 
 import Flight from './Flight';
 import Currency from './Currency';
@@ -47,7 +47,7 @@ class Tickets extends Component {
 	componentDidMount() {
 
 
-		const RAPIDAPI_API_URL = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/ORD/LAX/2019-11-23/2019-11-28';
+		const RAPIDAPI_API_URL = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/MIA/ORD/2019-11-26/2019-12-01';
 
 		const RAPIDAPI_REQUEST_HEADERS = {
 			'X-RapidAPI-Host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com'
@@ -123,13 +123,72 @@ class Tickets extends Component {
 
 	showPrices = (e) => {
 
-	e.preventDefault()
+	// e.preventDefault()
 
-		let cityFrom = e.target.elements.cityFrom.value;
-		let cityTo = e.target.elements.cityTo.value;
+		// let cityFrom = e.target.elements.cityFrom.value;
+		// let cityTo = e.target.elements.cityTo.value;
 
-		console.log(cityFrom)
-		console.log(cityTo)
+		// console.log(cityFrom)
+		// console.log(cityTo)
+
+
+
+
+
+
+
+//Form component
+// class ContactForm extends React.Component {
+// 	constructor(props) {
+// 	  super(props);
+// 	  this.state = {
+// 		name: '',
+// 		email:''
+// 	  };
+  
+// 	  this.handleChange = this.handleInputChange.bind(this);
+// 	  this.handleSubmit = this.handleSubmit.bind(this);
+// 	}
+	
+// 	handleInputChange(event) {
+// 	  const target = event.target;
+// 	  const value = target.type === 'checkbox' ? target.checked : target.value;
+// 	  const name = target.name;
+	  
+// 	  this.setState({
+// 		[name]: value
+// 	  });
+// 	  console.log('Change detected. State updated' + name + ' = ' + value);
+// 	}
+  
+// 	handleSubmit(event) {
+// 	  alert('A form was submitted: ' + this.state.name + ' // ' + this.state.email);
+// 	  event.preventDefault();
+// 	}
+  
+// 	render() {
+// 	  return (
+// 		<div>
+// 		  <form onSubmit={this.handleSubmit} >
+// 			<div className="form-group">
+// 			  <label for="nameImput">Name</label>
+// 			  <input type="text" name="name" value={this.state.name} onChange={this.handleChange} className="form-control" id="nameImput" placeholder="Name" />
+// 			</div>
+// 			<div className="form-group">
+// 			  <label for="emailImput">Name</label>
+// 			  <input name="email" type="email" value={this.state.email} onChange={this.handleChange} className="form-control" id="emailImput" placeholder="email@domain.com" />
+// 			</div>
+// 			<input type="submit" value="Submit" className="btn btn-primary" />
+// 		  </form>
+// 		</div>
+// 	  )
+// 	}
+//   }
+  
+  
+
+
+
 
 
 
@@ -157,7 +216,7 @@ class Tickets extends Component {
 						</div>
 						<div className="flight-info flex">
 							<div>
-								<h3></h3>
+								{/* <h3></h3> */}
 								<span>{this.state.cityFrom}</span>
 								<span className="gray">
 									{/* { departure } */}
@@ -170,7 +229,7 @@ class Tickets extends Component {
 						  </span>
 							</div>
 							<div>
-								<h3></h3>
+								{/* <h3></h3> */}
 								<span>{this.state.cityTo}</span>
 								<span className="gray">
 									Inbound
@@ -180,7 +239,7 @@ class Tickets extends Component {
 
 						<div className="flight-info2 flex2">
 							<div>
-								<h3></h3>
+								{/* <h3></h3> */}
 								<span>{this.state.cityFrom}</span>
 								<span className="gray">
 									{/* { departure } */}
@@ -193,7 +252,7 @@ class Tickets extends Component {
 						  </span>
 							</div>
 							<div>
-								<h3></h3>
+								{/* <h3></h3> */}
 								<span>{this.state.cityTo}</span>
 								<span className="gray">
 									Outbound
@@ -344,7 +403,7 @@ class Tickets extends Component {
 
 			<div className="flex">
 				<div className="select">
-					<span>Currency</span>
+					<span>Find the Tickets</span>
 
 					<form onSubmit={this.props.getWeather}>
                 <input type="text" name='city' placeholder="From..."/>
@@ -362,7 +421,7 @@ class Tickets extends Component {
 					{/* <hr /> */}
 					{/* {this.showPrices()} */}
 
-					{
+					{/* {
 						this.state.transfers.map((item, i) =>
 							<div className="transfers" key={i}>
 								<input
@@ -378,7 +437,7 @@ class Tickets extends Component {
 								</label>
 							</div>
 						)
-					}
+					} */}
 
 
 				</div>

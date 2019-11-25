@@ -121,9 +121,9 @@ span.gray {
   border-radius: 3px;
   border: 1px solid #2196f3;
 }
-.select input:checked ~label::before {
+/* .select input:checked ~label::before {
   background-image: url("../images/checked.png");
-}
+} */
 label{
   position: relative;
   left: 25px;
@@ -175,7 +175,7 @@ label{
   box-sizing: border-box;
   width: 65%;
   color: #4a4a4a;
-  background-image: url("../images/transfer.png");
+  background-image: url("/images/transfer.png");
   background-repeat: no-repeat;
   background-position: center 40px;
 }
@@ -185,7 +185,7 @@ label{
   box-sizing: border-box;
   width: 65%;
   color: #4a4a4a;
-  background-image: url("../images/transfer.png");
+  background-image: url("/images/transfer.png");
   background-repeat: no-repeat;
   background-position: center 40px;
   position: absolute;
