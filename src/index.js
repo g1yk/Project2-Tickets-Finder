@@ -9,15 +9,19 @@ import Loader from 'react-loader-spinner'
 
 import Flight from './Flight';
 import Currency from './Currency';
+import Form from './components/Form';
+import Weather from './components/Weather';
 
 import './css/index.css';
 import { tickets } from './data/tickets.json';
-import airports  from './data/airports.json';
+import airports from './data/airports.json';
 
 import axios from 'axios'
 const openflights = require("openflights-cached");
- 
+
 console.log(openflights.findIATA("PEK").name);
+
+const API_KEY = "fe7dc6f5538ed939abf8ada8328338ef"
 
 
 
@@ -29,7 +33,7 @@ class Tickets extends Component {
 			transfers: [true, true, true, true],
 			exchange: ["USD", "EUR"],
 			currencies: [{
-				name: "USD",
+				name: "Get Tickets",
 				rate: 1,
 				active: true,
 			}],
@@ -40,6 +44,12 @@ class Tickets extends Component {
 			cityTo: [],
 			carriers: [],
 			loading: false,
+			temperature: undefined,
+			city: undefined,
+			country: undefined,
+			humidity: undefined,
+			description: undefined,
+			error: undefined,
 
 			logos: [
 				{ 'logo': './images/alaska.svg', carrierId: 851 },
@@ -54,26 +64,87 @@ class Tickets extends Component {
 		}
 	}
 
+	getWeather = async (e) => {
+		e.preventDefault();
+
+		let city = e.target.elements.city.value;
+		let country = e.target.elements.country.value;
+
+
+		function fToC(fahrenheit) {
+			var fTemp = fahrenheit;
+			var fToCel = (fTemp - 32) * 5 / 9;
+			var message = fTemp + '\xB0F is ' + fToCel + '\xB0C.';
+			console.log(message);
+
+		}
+
+
+
+		if (city && country) {
+			let response = axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${API_KEY}&units=metric`)
+				.then((response) => {
+					console.log(response)
+
+					this.setState({
+						temperature: (response.data.main.temp * 1.8 + 32).toFixed(0) + "F",
+						city: response.data.name,
+						country: response.data.sys.country,
+						humidity: response.data.main.humidity,
+						description: response.data.weather[0].description,
+						error: '',
+
+					}, () => {
+						console.log(this.state)
+					}
+					)
+				})
+
+				.catch(function (error) {
+					// handle error
+					console.log(error);
+				})
+				.finally(function () {
+					// always executed
+				});
+			console.log(response)
+
+		} else {
+			this.setState({
+				temperature: undefined,
+				city: undefined,
+				country: undefined,
+				humidity: undefined,
+				description: undefined,
+				error: 'Please enter the value',
+
+			}, () => {
+				console.log(this.state)
+			}
+			)
+		}
+	}
+
 	getCities = async (e) => {
 		e.preventDefault();
 
-		this.setState({loading:true})
+		this.setState({ loading: true })
 
 		let cityTo = e.target.elements.cityTo.value;
 		let cityFrom = e.target.elements.cityFrom.value;
 
 
 		let airportTo = airports.find(airport => {
-			return ( airport.city == cityTo  || airport.code == cityTo) 
+			return (airport.city == cityTo || airport.code == cityTo)
 		})
 
 		let airportFrom = airports.find(airport => {
-			return ( airport.city == cityFrom  || airport.code == cityFrom) // airport.state == cityFrom ||
+			return (airport.city == cityFrom || airport.code == cityFrom) // airport.state == cityFrom ||
 		})
 
 
 		console.log(airportTo, airportFrom)
-		let to = airportTo ? airportTo.code : cityTo 
+		let to = airportTo ? airportTo.code : cityTo
 		let from = airportFrom ? airportFrom.code : cityFrom
 
 		if (cityTo && cityFrom) {
@@ -96,7 +167,7 @@ class Tickets extends Component {
 						return eachPlace.CityId.includes(cityTo) || eachPlace.CityName.includes(cityTo);
 					})
 					let secondCity = data.Places.find(eachPlace => {
-						return eachPlace.CityId.includes(cityFrom)  || eachPlace.CityName.includes(cityFrom);;
+						return eachPlace.CityId.includes(cityFrom) || eachPlace.CityName.includes(cityFrom);;
 					})
 
 
@@ -111,7 +182,7 @@ class Tickets extends Component {
 					})
 
 				})
-				.catch(error => { 
+				.catch(error => {
 					console.error('create student error', error.response)
 					alert(JSON.stringify(error.response.data))
 				})
@@ -229,7 +300,7 @@ class Tickets extends Component {
 					<div className="flight flex">
 
 						<div className="flight-buy">
-							{ logo[0] ?
+							{logo[0] ?
 								<img src={logo[0].logo} className="airline-logo" alt="Turkish airlines" />
 								:
 								<img src='./images/alaska.svg' className="airline-logo" alt="Alaska airlines" />
@@ -439,8 +510,25 @@ class Tickets extends Component {
 
 					</form>
 					<Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} />
-					<button className="getTickets">Get Tickets</button>
-					<span>Transfers</span>
+
+
+
+
+
+					<Form getWeather={this.getWeather} />
+
+					<Weather
+						temperature={this.state.temperature}
+						humidity={this.state.humidity}
+						city={this.state.city}
+						country={this.state.country}
+						description={this.state.description}
+						error={this.state.error}
+					/>
+
+
+
+					{/* <span>Transfers</span> */}
 
 					{/* {this.getCarriers()} */}
 					{/* 
@@ -473,16 +561,16 @@ class Tickets extends Component {
 				<div className="tickets">
 
 
-					{this.state.loading ? 
-			<Loader
-			type="Plane"
-			color="#00BFFF"
-			height={100}
-			width={100}
-			timeout={3000} //3 secs
-   
-		 />
-					:  ''
+					{this.state.loading ?
+						<Loader
+							type="Plane"
+							color="#00BFFF"
+							height={100}
+							width={100}
+							timeout={3000} //3 secs
+
+						/>
+						: ''
 					}
 					{this.showPrices()}
 					{

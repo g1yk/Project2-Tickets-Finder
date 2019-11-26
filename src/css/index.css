@@ -104,6 +104,29 @@ span.gray {
     outline: none;
   }
 
+
+
+  .getTickets button:first-child {
+    box-sizing: border-box;
+    border-radius: 3px 0 0 3px;
+  }
+  .getTickets button:nth-child(-n+2) {
+    border-right: 1px solid #2196f3;
+  }
+  .getTickets button:last-child {
+    border-radius: 0 3px 3px 0;
+  }
+  .getTickets button:hover {
+    background-color: #f2fcff;
+  }
+  .getTickets button.selected {
+    color: #ffffff;
+    background-color: #2196f3;
+  }
+
+
+
+
 .currency button:first-child {
   box-sizing: border-box;
   border-radius: 3px 0 0 3px;
