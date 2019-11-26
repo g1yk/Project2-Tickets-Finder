@@ -2,13 +2,24 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
 // import logo from './images/vectorpaint.svg';
+// import { Plane } from '@bit/mhnpd.react-loader-spinner.plane';
+// import { getRandomColor } from '@bit/joshk.jotils.get-random-color'
+
+import Loader from 'react-loader-spinner'
 
 import Flight from './Flight';
 import Currency from './Currency';
 
 import './css/index.css';
 import { tickets } from './data/tickets.json';
+import airports  from './data/airports.json';
+
 import axios from 'axios'
+const openflights = require("openflights-cached");
+ 
+console.log(openflights.findIATA("PEK").name);
+
+
 
 class Tickets extends Component {
 	constructor() {
@@ -28,82 +39,90 @@ class Tickets extends Component {
 			cityFrom: [],
 			cityTo: [],
 			carriers: [],
+			loading: false,
 
-			logos : [
-				{'logo':'./images/united.svg', carrierId: 1793},
-				// {'American':'./images/american.svg'},
-				{'logo':'./images/alaska.svg', carrierId: 851},
-				{'logo':'./images/frontier.svg', carrierId: 1065},
-				{'logo':'./images/spirit.svg', carrierId: 1467},
-
-
-
+			logos: [
+				{ 'logo': './images/alaska.svg', carrierId: 851 },
+				{ 'logo': './images/JetBlue.svg', carrierId: 870 },
+				{ 'logo': './images/frontier.svg', carrierId: 1065 },
+				{ 'logo': './images/spirit.svg', carrierId: 1467 },
+				{ 'logo': './images/sun.png', carrierId: 1721 },
+				{ 'logo': './images/united.svg', carrierId: 1793 },
 
 			]
 
 		}
 	}
 
-	componentDidMount() {
+	getCities = async (e) => {
+		e.preventDefault();
+
+		this.setState({loading:true})
+
+		let cityTo = e.target.elements.cityTo.value;
+		let cityFrom = e.target.elements.cityFrom.value;
 
 
-		const RAPIDAPI_API_URL = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/MIA/ORD/2019-11-26/2019-12-01';
+		let airportTo = airports.find(airport => {
+			return ( airport.city == cityTo  || airport.code == cityTo) 
+		})
 
-		const RAPIDAPI_REQUEST_HEADERS = {
-			'X-RapidAPI-Host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com'
-			, 'X-RapidAPI-Key': '959cf265cfmsh1aab6486c8416f4p18ac02jsn366013c65ef6'
-			, 'Content-Type': 'application/json'
-		};
-
-
-		axios.get(RAPIDAPI_API_URL, { headers: RAPIDAPI_REQUEST_HEADERS })
-
-			.then(response => {
-
-				const data = response.data;
-				console.log('data', data);
-
-				this.setState({
-					quotes: data.Quotes,
-					data: data,
+		let airportFrom = airports.find(airport => {
+			return ( airport.city == cityFrom  || airport.code == cityFrom) // airport.state == cityFrom ||
+		})
 
 
-				}, () => {
-					console.log('state', this.state)
-				}
-				)
+		console.log(airportTo, airportFrom)
+		let to = airportTo ? airportTo.code : cityTo 
+		let from = airportFrom ? airportFrom.code : cityFrom
 
-				this.setState({
-					places: data.Places,
-					data: data,
+		if (cityTo && cityFrom) {
 
-				},
-				)
+			const RAPIDAPI_API_URL = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/${to}/${from}/2019-11-26/2019-12-01`;
 
-				this.setState({
-					data: data,
-					cityFrom: this.state.data.Places[0].CityName,
-					cityTo: this.state.data.Places[1].CityName,
+			const RAPIDAPI_REQUEST_HEADERS = {
+				'X-RapidAPI-Host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com'
+				, 'X-RapidAPI-Key': '959cf265cfmsh1aab6486c8416f4p18ac02jsn366013c65ef6'
+				, 'Content-Type': 'application/json'
+			};
 
-				},
-				)
+			let request = axios.get(RAPIDAPI_API_URL, { headers: RAPIDAPI_REQUEST_HEADERS })
 
-				this.setState({
-					carriers: data.Carriers,
-				}, () => {
-					console.log('carriers', this.state.carriers)
-				}
-				)
+				.then(response => {
 
-			})
-			.catch(error => console.error('create student error', error));
+					const data = response.data;
+					console.log('data', data, cityTo, cityFrom);
+					let firstCity = data.Places.find(eachPlace => {
+						return eachPlace.CityId.includes(cityTo) || eachPlace.CityName.includes(cityTo);
+					})
+					let secondCity = data.Places.find(eachPlace => {
+						return eachPlace.CityId.includes(cityFrom)  || eachPlace.CityName.includes(cityFrom);;
+					})
+
+
+					this.setState({
+						quotes: data.Quotes,
+						data: data,
+						places: data.Places,
+						cityFrom: firstCity.CityName,
+						cityTo: secondCity.CityName,
+						carriers: data.Carriers,
+						loading: false
+					})
+
+				})
+				.catch(error => { 
+					console.error('create student error', error.response)
+					alert(JSON.stringify(error.response.data))
+				})
+		}
 	}
 
 
 	getCarriers = (e) => {
 		let copyCarriers = [...this.state.carriers]
 		if (copyCarriers.length > 0) {
-			console.log(copyCarriers)
+			// console.log(copyCarriers)
 
 			return (copyCarriers.map((keyName, i) => (
 				<li className="travelcompany-input" key={i}>
@@ -123,7 +142,7 @@ class Tickets extends Component {
 
 	showPrices = (e) => {
 
-	// e.preventDefault()
+		// e.preventDefault()
 
 		// let cityFrom = e.target.elements.cityFrom.value;
 		// let cityTo = e.target.elements.cityTo.value;
@@ -137,58 +156,58 @@ class Tickets extends Component {
 
 
 
-//Form component
-// class ContactForm extends React.Component {
-// 	constructor(props) {
-// 	  super(props);
-// 	  this.state = {
-// 		name: '',
-// 		email:''
-// 	  };
-  
-// 	  this.handleChange = this.handleInputChange.bind(this);
-// 	  this.handleSubmit = this.handleSubmit.bind(this);
-// 	}
-	
-// 	handleInputChange(event) {
-// 	  const target = event.target;
-// 	  const value = target.type === 'checkbox' ? target.checked : target.value;
-// 	  const name = target.name;
-	  
-// 	  this.setState({
-// 		[name]: value
-// 	  });
-// 	  console.log('Change detected. State updated' + name + ' = ' + value);
-// 	}
-  
-// 	handleSubmit(event) {
-// 	  alert('A form was submitted: ' + this.state.name + ' // ' + this.state.email);
-// 	  event.preventDefault();
-// 	}
-  
-// 	render() {
-// 	  return (
-// 		<div>
-// 		  <form onSubmit={this.handleSubmit} >
-// 			<div className="form-group">
-// 			  <label for="nameImput">Name</label>
-// 			  <input type="text" name="name" value={this.state.name} onChange={this.handleChange} className="form-control" id="nameImput" placeholder="Name" />
-// 			</div>
-// 			<div className="form-group">
-// 			  <label for="emailImput">Name</label>
-// 			  <input name="email" type="email" value={this.state.email} onChange={this.handleChange} className="form-control" id="emailImput" placeholder="email@domain.com" />
-// 			</div>
-// 			<input type="submit" value="Submit" className="btn btn-primary" />
-// 		  </form>
-// 		</div>
-// 	  )
-// 	}
-//   }
-  
-  
+		//Form component
+		// class ContactForm extends React.Component {
+		// 	constructor(props) {
+		// 	  super(props);
+		// 	  this.state = {
+		// 		name: '',
+		// 		email:''
+		// 	  };
+
+		// 	  this.handleChange = this.handleInputChange.bind(this);
+		// 	  this.handleSubmit = this.handleSubmit.bind(this);
+		// 	}
+
+		// 	handleInputChange(event) {
+		// 	  const target = event.target;
+		// 	  const value = target.type === 'checkbox' ? target.checked : target.value;
+		// 	  const name = target.name;
+
+		// 	  this.setState({
+		// 		[name]: value
+		// 	  });
+		// 	  console.log('Change detected. State updated' + name + ' = ' + value);
+		// 	}
+
+		// 	handleSubmit(event) {
+		// 	  alert('A form was submitted: ' + this.state.name + ' // ' + this.state.email);
+		// 	  event.preventDefault();
+		// 	}
+
+		// 	render() {
+		// 	  return (
+		// 		<div>
+		// 		  <form onSubmit={this.handleSubmit} >
+		// 			<div className="form-group">
+		// 			  <label for="nameImput">Name</label>
+		// 			  <input type="text" name="name" value={this.state.name} onChange={this.handleChange} className="form-control" id="nameImput" placeholder="Name" />
+		// 			</div>
+		// 			<div className="form-group">
+		// 			  <label for="emailImput">Name</label>
+		// 			  <input name="email" type="email" value={this.state.email} onChange={this.handleChange} className="form-control" id="emailImput" placeholder="email@domain.com" />
+		// 			</div>
+		// 			<input type="submit" value="Submit" className="btn btn-primary" />
+		// 		  </form>
+		// 		</div>
+		// 	  )
+		// 	}
+		//   }
 
 
+		// Places.PlaceId
 
+		// [2].InboundLeg.DestinationId
 
 
 
@@ -196,10 +215,11 @@ class Tickets extends Component {
 		if (copyQuotes.length > 0) {
 			console.log(copyQuotes)
 			return (copyQuotes.map((keyName, i) => {
-					let logo = this.state.logos.filter(eachCompany => {
-						return eachCompany.carrierId === keyName.InboundLeg.CarrierIds[0]
-					})
-				console.log(logo[0].logo, '90909090')
+				let logo = this.state.logos.filter(eachCompany => {
+					return eachCompany.carrierId === keyName.InboundLeg.CarrierIds[0]
+				})
+				// console.log(logo[0].logo, '90909090')
+
 				return (
 
 
@@ -207,8 +227,14 @@ class Tickets extends Component {
 
 
 					<div className="flight flex">
+
 						<div className="flight-buy">
-							<img src={logo[0].logo} className="airline-logo" alt="Turkish airlines" />
+							{ logo[0] ?
+								<img src={logo[0].logo} className="airline-logo" alt="Turkish airlines" />
+								:
+								<img src='./images/alaska.svg' className="airline-logo" alt="Alaska airlines" />
+
+							}
 							<button>
 
 								{keyName.MinPrice} USD
@@ -260,7 +286,7 @@ class Tickets extends Component {
 							</div>
 						</div>
 
-						
+
 					</div>
 
 
@@ -332,7 +358,8 @@ class Tickets extends Component {
 
 		let copyPlaces = [...this.state.places]
 		if (copyPlaces.length > 0) {
-			console.log(copyPlaces[0])
+			// console.log(copyPlaces[0])
+			console.log('log ' + this.state.places)
 			// console.log('fdsf', this.state.data.Places[0].CityName)
 
 			return (copyPlaces.map((keyName, i) => (
@@ -405,13 +432,14 @@ class Tickets extends Component {
 				<div className="select">
 					<span>Find the Tickets</span>
 
-					<form onSubmit={this.props.getWeather}>
-                <input type="text" name='city' placeholder="From..."/>
-                <input type="text"  name='country' placeholder="To..." />
-                <button>Get Tickets</button>
-                
-            </form>
+					<form onSubmit={this.getCities}>
+						<input type="text" name='cityTo' placeholder="From..." />
+						<input type="text" name='cityFrom' placeholder="To..." />
+						<button>Get Tickets</button>
+
+					</form>
 					<Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} />
+					<button className="getTickets">Get Tickets</button>
 					<span>Transfers</span>
 
 					{/* {this.getCarriers()} */}
@@ -444,6 +472,18 @@ class Tickets extends Component {
 
 				<div className="tickets">
 
+
+					{this.state.loading ? 
+			<Loader
+			type="Plane"
+			color="#00BFFF"
+			height={100}
+			width={100}
+			timeout={3000} //3 secs
+   
+		 />
+					:  ''
+					}
 					{this.showPrices()}
 					{
 						sortedTickets.map((item, i) => {
