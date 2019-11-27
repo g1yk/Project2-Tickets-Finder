@@ -25,6 +25,7 @@ import axios from 'axios'
 
 const API_KEY = "fe7dc6f5538ed939abf8ada8328338ef"
 
+console.log('hihihih')
 
 
 class Tickets extends Component {
