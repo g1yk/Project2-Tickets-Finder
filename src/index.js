@@ -19,7 +19,7 @@ import { tickets } from './data/tickets.json';
 import airports from './data/airports.json';
 
 import axios from 'axios'
-const openflights = require("openflights-cached");
+// const openflights = require("openflights-cached");
 
 // console.log(openflights.findIATA("PEK").name);
 
@@ -86,7 +86,7 @@ class Tickets extends Component {
 
 
 		if (cityTo) {
-			let response = axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${cityTo},us&appid=${API_KEY}&units=metric`)
+			let response = axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityTo},us&appid=${API_KEY}&units=metric`)
 				.then((response) => {
 					console.log(response)
 
@@ -100,7 +100,7 @@ class Tickets extends Component {
 
 					}, () => {
 
-						axios.post('http://ironrest.herokuapp.com/tickets-app',
+						axios.post('https://ironrest.herokuapp.com/tickets-app',
 							{
 								temperature: this.state.temperature,
 								city: this.state.cityTo,
