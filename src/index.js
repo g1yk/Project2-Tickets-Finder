@@ -174,7 +174,7 @@ class Tickets extends Component {
 
 		if (cityTo && cityFrom) {
 
-			const RAPIDAPI_API_URL = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/${to}/${from}/2019-11-26/2019-12-01`;
+			const RAPIDAPI_API_URL = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/${to}/${from}/2019-11-28/2019-12-01`;
 
 			const RAPIDAPI_REQUEST_HEADERS = {
 				'X-RapidAPI-Host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com'
