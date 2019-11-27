@@ -6,6 +6,8 @@ import registerServiceWorker from './registerServiceWorker';
 // import { getRandomColor } from '@bit/joshk.jotils.get-random-color'
 
 import Loader from 'react-loader-spinner'
+import Plane from 'react-loader-spinner'
+
 
 import Flight from './Flight';
 import Currency from './Currency';
@@ -19,7 +21,7 @@ import airports from './data/airports.json';
 import axios from 'axios'
 const openflights = require("openflights-cached");
 
-console.log(openflights.findIATA("PEK").name);
+// console.log(openflights.findIATA("PEK").name);
 
 const API_KEY = "fe7dc6f5538ed939abf8ada8328338ef"
 
@@ -66,9 +68,11 @@ class Tickets extends Component {
 
 	getWeather = async (e) => {
 		e.preventDefault();
+		console.log('calling the get weather function')
 
-		let city = e.target.elements.city.value;
-		let country = e.target.elements.country.value;
+		let cityTo = e.target.elements.cityTo.value;
+		console.log(cityTo)
+		// let country = e.target.elements.country.value;
 
 
 		function fToC(fahrenheit) {
@@ -81,20 +85,33 @@ class Tickets extends Component {
 
 
 
-		if (city && country) {
-			let response = axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${API_KEY}&units=metric`)
+		if (cityTo) {
+			let response = axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${cityTo},us&appid=${API_KEY}&units=metric`)
 				.then((response) => {
 					console.log(response)
 
 					this.setState({
 						temperature: (response.data.main.temp * 1.8 + 32).toFixed(0) + "F",
-						city: response.data.name,
-						country: response.data.sys.country,
+						cityTo: response.data.name,
+						// country: response.data.sys.country,
 						humidity: response.data.main.humidity,
 						description: response.data.weather[0].description,
 						error: '',
 
 					}, () => {
+
+						axios.post('http://ironrest.herokuapp.com/tickets-app',
+							{
+								temperature: this.state.temperature,
+								city: this.state.cityTo,
+								description: this.state.description,
+								humidity: this.state.humidity,
+								}
+						).then(res => {
+							console.log(res.data)
+						})
+
+
 						console.log(this.state)
 					}
 					)
@@ -109,11 +126,14 @@ class Tickets extends Component {
 				});
 			console.log(response)
 
+
+
+
 		} else {
 			this.setState({
 				temperature: undefined,
-				city: undefined,
-				country: undefined,
+				cityTo: undefined,
+				// country: undefined,
 				humidity: undefined,
 				description: undefined,
 				error: 'Please enter the value',
@@ -127,10 +147,14 @@ class Tickets extends Component {
 
 	getCities = async (e) => {
 		e.preventDefault();
+		console.log('calling get cities function')
 
 		this.setState({ loading: true })
 
 		let cityTo = e.target.elements.cityTo.value;
+
+		console.log(cityTo)
+
 		let cityFrom = e.target.elements.cityFrom.value;
 
 
@@ -314,7 +338,7 @@ class Tickets extends Component {
 						<div className="flight-info flex">
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityFrom}</span>
+								<span>{this.state.cityTo}</span>
 								<span className="gray">
 									{/* { departure } */}
 									Inbound
@@ -327,7 +351,7 @@ class Tickets extends Component {
 							</div>
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityTo}</span>
+								<span>{this.state.cityFrom}</span>
 								<span className="gray">
 									Inbound
 						  </span>
@@ -337,7 +361,7 @@ class Tickets extends Component {
 						<div className="flight-info2 flex2">
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityFrom}</span>
+								<span>{this.state.cityTo}</span>
 								<span className="gray">
 									{/* { departure } */}
 									Outbound
@@ -350,7 +374,7 @@ class Tickets extends Component {
 							</div>
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityTo}</span>
+								<span>{this.state.cityFrom}</span>
 								<span className="gray">
 									Outbound
 						  </span>
@@ -475,26 +499,10 @@ class Tickets extends Component {
 		});
 	}
 
-
-
 	render() {
-		const currency = this.state.currencies.find(({ active }) => active);
-
-		const sortedTickets = tickets.sort((a, b) => {
-			const val1 = parseInt(a.departure_time.replace(":", ""), 10);
-			const val2 = parseInt(b.departure_time.replace(":", ""), 10);
-
-			return val1 - val2;
-		});
+	
 
 		return (
-
-
-
-
-
-
-
 
 
 
@@ -503,25 +511,26 @@ class Tickets extends Component {
 				<div className="select">
 					<span>Find the Tickets</span>
 
-					<form onSubmit={this.getCities}>
-						<input type="text" name='cityTo' placeholder="From..." />
-						<input type="text" name='cityFrom' placeholder="To..." />
+					<form onSubmit={(e) => { this.getCities(e); this.getWeather(e) }}>
+
+
+						<input type="text" name='cityFrom' placeholder="From..." />
+						<input type="text" name='cityTo' placeholder="To..." />
+
 						<button>Get Tickets</button>
 
 					</form>
-					<Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} />
+					{/* <Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} /> */}
 
 
 
 
-
-					<Form getWeather={this.getWeather} />
 
 					<Weather
 						temperature={this.state.temperature}
 						humidity={this.state.humidity}
-						city={this.state.city}
-						country={this.state.country}
+						city={this.state.cityFrom}
+						// country={this.state.country}
 						description={this.state.description}
 						error={this.state.error}
 					/>
@@ -567,21 +576,15 @@ class Tickets extends Component {
 							color="#00BFFF"
 							height={100}
 							width={100}
-							timeout={3000} //3 secs
+							timeout={5000} //5 secs
 
 						/>
 						: ''
 					}
 					{this.showPrices()}
-					{
-						sortedTickets.map((item, i) => {
-							if (this.state.transfers[item.stops]) {
-								return <Flight key={i} tickets={item} currency={currency} />
-							}
 
-							return null;
-						})
-					}
+					
+				
 				</div>
 			</div>
 		);
