@@ -213,7 +213,7 @@ label{
   box-sizing: border-box;
   width: 65%;
   color: #4a4a4a;
-  background-image: url("/images/transfer.png");
+  background-image: url("../transfer.png");
   background-repeat: no-repeat;
   background-position: center 40px;
 }
@@ -223,7 +223,7 @@ label{
   box-sizing: border-box;
   width: 65%;
   color: #4a4a4a;
-  background-image: url("/images/transfer.png");
+  background-image: url("../transfer.png");
   background-repeat: no-repeat;
   background-position: center 40px;
   padding-top: 28px;
