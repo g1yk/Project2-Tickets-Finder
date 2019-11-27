@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+
+// export default React.PureComponent;
+// export const pureComponentAvailable = true;
+
 import registerServiceWorker from './registerServiceWorker';
 // import logo from './images/vectorpaint.svg';
 // import { Plane } from '@bit/mhnpd.react-loader-spinner.plane';
@@ -14,10 +18,16 @@ import Currency from './Currency';
 import Form from './components/Form';
 import Weather from './components/Weather';
 
+import 'react-dates/initialize';
+import { DateRangePicker, SingleDatePicker, DayPickerRangeController } from 'react-dates';
+import 'react-dates/lib/css/_datepicker.css';
+import moment from 'moment'
+
+
 import './css/index.css';
 import { tickets } from './data/tickets.json';
 import airports from './data/airports.json';
-
+import Calendar from 'react-calendar';
 import axios from 'axios'
 // const openflights = require("openflights-cached");
 
@@ -27,7 +37,19 @@ const API_KEY = "fe7dc6f5538ed939abf8ada8328338ef"
 
 console.log('hihihih')
 
+Date.prototype.addDays = function (days) {
+	var date = new Date(this.valueOf());
+	date.setDate(date.getDate() + days);
+	return date;
+}
 
+
+
+var date = new Date();
+
+let d = date.addDays(7)
+
+console.log(date, d)
 class Tickets extends Component {
 	constructor() {
 		super();
@@ -53,6 +75,8 @@ class Tickets extends Component {
 			humidity: undefined,
 			description: undefined,
 			error: undefined,
+			startDate: moment(),
+			endDate: moment().add(3, 'days'),
 
 			logos: [
 				{ 'logo': './images/alaska.svg', carrierId: 851 },
@@ -92,8 +116,8 @@ class Tickets extends Component {
 					console.log(response)
 
 					this.setState({
-						temperature: (response.data.main.temp * 1.8 + 32).toFixed(0) + "F",
 						cityTo: response.data.name,
+						temperature: "It's " + (response.data.main.temp * 1.8 + 32).toFixed(0) + `F` + ` in ${cityTo}`,
 						// country: response.data.sys.country,
 						humidity: response.data.main.humidity,
 						description: response.data.weather[0].description,
@@ -107,7 +131,7 @@ class Tickets extends Component {
 								city: this.state.cityTo,
 								description: this.state.description,
 								humidity: this.state.humidity,
-								}
+							}
 						).then(res => {
 							console.log(res.data)
 						})
@@ -153,6 +177,13 @@ class Tickets extends Component {
 		this.setState({ loading: true })
 
 		let cityTo = e.target.elements.cityTo.value;
+		// let endDate = e.target.elements.endDate.value;
+		// let startDate = e.target.elements.startDate.value;
+		let endDate = this.state.endDate.format('YYYY-MM-DD')
+		let startDate = this.state.startDate.format('YYYY-MM-DD')
+		console.log(endDate, startDate)
+		//2019-09-01
+
 
 		console.log(cityTo)
 
@@ -172,9 +203,10 @@ class Tickets extends Component {
 		let to = airportTo ? airportTo.code : cityTo
 		let from = airportFrom ? airportFrom.code : cityFrom
 
-		if (cityTo && cityFrom) {
 
-			const RAPIDAPI_API_URL = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/${to}/${from}/2019-11-28/2019-12-01`;
+		if (cityTo && cityFrom && endDate && startDate) {
+
+			const RAPIDAPI_API_URL = `https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/browseroutes/v1.0/US/USD/en-US/${to}/${from}/${startDate}/${endDate}`;
 
 			const RAPIDAPI_REQUEST_HEADERS = {
 				'X-RapidAPI-Host': 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com'
@@ -347,7 +379,8 @@ class Tickets extends Component {
 							</div>
 							<div>
 								<span className="gray">
-									{keyName.MinPrice} USD
+									{/* {keyName.MinPrice} */}
+									🛫
 						  </span>
 							</div>
 							<div>
@@ -362,7 +395,7 @@ class Tickets extends Component {
 						<div className="flight-info2 flex2">
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityTo}</span>
+								<span>{this.state.cityFrom}</span>
 								<span className="gray">
 									{/* { departure } */}
 									Outbound
@@ -370,12 +403,13 @@ class Tickets extends Component {
 							</div>
 							<div>
 								<span className="gray">
-									{keyName.MinPrice} USD
+									{/* {keyName.MinPrice} USD */}
+									🛬
 						  </span>
 							</div>
 							<div>
 								{/* <h3></h3> */}
-								<span>{this.state.cityFrom}</span>
+								<span>{this.state.cityTo}</span>
 								<span className="gray">
 									Outbound
 						  </span>
@@ -500,8 +534,15 @@ class Tickets extends Component {
 		});
 	}
 
+
+	setDate = ({ startDate, endDate }) => {
+		this.setState({ startDate, endDate })
+
+
+	}
+
 	render() {
-	
+
 
 		return (
 
@@ -512,15 +553,67 @@ class Tickets extends Component {
 				<div className="select">
 					<span>Find the Tickets</span>
 
+
+
+
+
 					<form onSubmit={(e) => { this.getCities(e); this.getWeather(e) }}>
+						{/* <Calendar name='dateStart' onChange={this.onChange} value={this.state.date} />
+						<Calendar name='endDate' onChange={this.onChange} value={this.state.date} /> */}
 
 
-						<input type="text" name='cityFrom' placeholder="From..." />
-						<input type="text" name='cityTo' placeholder="To..." />
 
-						<button>Get Tickets</button>
+
+						<div class="booking-form">
+
+
+
+
+							<div class="form-group">
+								<span class="form-label">Flying from</span>
+								<input className="form-control" type="text" name='cityFrom' placeholder="From..." />
+							</div>
+
+							<div class="form-group">
+								<span class="form-label">Flying to</span>
+								<input className="form-control" type="text" name='cityTo' placeholder="To..." />
+							</div>
+
+
+
+
+
+
+						
+
+
+
+
+						<DateRangePicker className='dateForm'
+							startDate={this.state.startDate} // momentPropTypes.momentObj or null,
+							startDateId="your_unique_start_date_id" // PropTypes.string.isRequired,
+							endDate={this.state.endDate} // momentPropTypes.momentObj or null,
+							endDateId="your_unique_end_date_id" // PropTypes.string.isRequired,
+							onDatesChange={({ startDate, endDate }) => this.setDate({ startDate, endDate })}//this.setState({ startDate, endDate })} // PropTypes.func.isRequired,
+							focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+							onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
+						/>
+
+
+
+						<div className="form-btn">
+							<button className="submit-btn">Show flights 
+							 </button>
+						</div>
+
+						{/* <button></button> */}
+
+
+
+						</div>
 
 					</form>
+					
 					{/* <Currency currencies={this.state.currencies} handler={this.setCurrency.bind(this)} /> */}
 
 
@@ -584,8 +677,8 @@ class Tickets extends Component {
 					}
 					{this.showPrices()}
 
-					
-				
+
+
 				</div>
 			</div>
 		);
